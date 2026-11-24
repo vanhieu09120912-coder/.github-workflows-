@@ -1,24 +1,27 @@
 name: build
-on: [push, pull_request, workflow_dispatch]
+on: [push, workflow_dispatch]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-java@v4
         with:
-          distribution: temurin
-          java-version: 21
+          java-version: '25'
+          distribution: 'microsoft'
 
-      - name: Cho phép chạy gradlew
-        run: chmod +x ./gradlew
+      - name: Giải nén project
+        run: unzip -q friendplay-ready.zip -d proj
 
       - name: Build
-        run: ./gradlew build
+        working-directory: proj
+        run: |
+          chmod +x ./gradlew
+          ./gradlew build
 
       - uses: actions/upload-artifact@v4
         with:
           name: mod-jar
-          path: build/libs/*.jar
+          path: proj/build/libs/*.jar
